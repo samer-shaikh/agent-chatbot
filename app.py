@@ -1,5 +1,5 @@
 import streamlit as st
-from graph import chatbot,llm
+from graph import chatbot
 from langchain_core.messages import HumanMessage
 
 # ---------------- Page Config ----------------
@@ -94,7 +94,10 @@ if user_input:
         ai_respones = st.write_stream(
             message_chunk.content for message_chunk,meta_data in chatbot.stream( # type: ignore
                 {'messages':[HumanMessage(content=user_input)]},
-                config={"configurable": {"thread_id": "session_1"}},
+                config={
+                    "configurable": {
+                        "thread_id": st.session_state.thread_id
+                        }},
                 stream_mode='messages'  
             )
         )

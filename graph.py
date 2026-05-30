@@ -3,14 +3,14 @@ from dotenv import load_dotenv
 from langgraph.graph import StateGraph, START,END
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.checkpoint.memory import InMemorySaver
-from langchain.messages import HumanMessage
+from langgraph.prebuilt import ToolNode, tools_condition
 
 from state import ChatState
+from tools import tools
 
 load_dotenv()
 
 memory = InMemorySaver()
-config = {"configurable": {"thread_id": "session_1"}}
 
 # **************** making the model *********************
 llm = ChatGoogleGenerativeAI(
@@ -18,11 +18,13 @@ llm = ChatGoogleGenerativeAI(
     streaming=True
 )
 
+llm_with_tools = llm.bind_tools(tools=tools)
+
 # **************** creating the nodes funcions *********************
 
 def chatbot_node(state: ChatState):
 
-    response = llm.invoke(
+    response = llm_with_tools.invoke(
         state["messages"]
     )
 
@@ -35,8 +37,10 @@ def chatbot_node(state: ChatState):
 graph = StateGraph(ChatState)
 
 graph.add_node('chatbot_node',chatbot_node)
+graph.add_node('tools',ToolNode(tools))
 
 graph.add_edge(START,'chatbot_node')
-graph.add_edge('chatbot_node',END)
+graph.add_conditional_edges('chatbot_node',tools_condition)
+graph.add_edge('tools','chatbot_node')
 
 chatbot = graph.compile(checkpointer=memory)
