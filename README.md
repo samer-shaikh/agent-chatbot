@@ -220,10 +220,10 @@ This project demonstrates:
 Learning AI Engineering, LangGraph, Machine Learning, and Agentic AI.
 
 GitHub:
-https://github.com/samer-shaikh
+[(see profile)](https://github.com/samer-shaikh)
 
 LinkedIn:
-(Add your LinkedIn profile here)
+[(see profile)](https://www.linkedin.com/in/samer-shaikh-427668320/)
 
 ---
 
